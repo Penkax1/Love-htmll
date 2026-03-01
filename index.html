@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для моей единственной ❤️</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-pink: #ff3366;
+            --light-pink: #ff85a2;
+            --soft-pink: #ffdee9;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: #000;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Comfortaa', cursive;
+        }
+
+        /* Фон и декорации */
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #fff0f5 0%, #ffc1d3 100%);
+            z-index: 1; transition: opacity 1s;
+        }
+
+        #stars-container, #flowers-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .flower { position: absolute; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+
+        /* Эффект шторки */
+        #transition-swipe {
+            position: fixed; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary-pink), #fff, var(--primary-pink), transparent);
+            z-index: 9999; pointer-events: none;
+        }
+        .swipe-anim { animation: swipe 1.2s ease-in-out; }
+        @keyframes swipe { 0% { left: -100%; } 50% { left: 0; } 100% { left: 100%; } }
+
+        /* ГЛАВНЫЙ ЭКРАН */
+        #ui { position: relative; z-index: 20; text-align: center; transition: opacity 1s; }
+        
+        .headline { 
+            font-family: 'Great Vibes', cursive; 
+            font-size: clamp(80px, 15vw, 150px);
+            color: #ffebf0;
+            text-shadow: 
+                0 0 15px rgba(255, 51, 102, 0.4),
+                0 0 30px rgba(255, 51, 102, 0.2),
+                0 0 45px rgba(255, 133, 162, 0.1),
+                2px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            cursor: default;
+            user-select: none;
+            animation: glowBreath 5s infinite ease-in-out, floatText 6s infinite ease-in-out;
+        }
+
+        @keyframes glowBreath {
+            0%, 100% { text-shadow: 0 0 15px rgba(255, 51, 102, 0.3), 0 0 30px rgba(255, 51, 102, 0.1); opacity: 0.95; }
+            50% { text-shadow: 0 0 25px rgba(255, 51, 102, 0.5), 0 0 50px rgba(255, 133, 162, 0.3); opacity: 1; }
+        }
+
+        @keyframes floatText {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .heart-btn { 
+            background: none; border: none; cursor: pointer; font-size: 100px; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            filter: drop-shadow(0 0 15px rgba(255, 51, 102, 0.4)); 
+        }
+        .heart-btn:hover { transform: scale(1.3) rotate(10deg); filter: drop-shadow(0 0 30px var(--primary-pink)); }
+
+        /* МАГИЧЕСКИЙ СЛОЙ */
+        #magic-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 100;
+        }
+
+        #quote-container {
+            width: 85%; max-width: 800px;
+            font-family: 'Great Vibes', cursive; font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: white; text-align: center;
+            text-shadow: 0 0 15px var(--primary-pink);
+            margin-bottom: 20px;
+            display: flex; align-items: flex-end; justify-content: center;
+            min-height: 150px;
+        }
+
+        #quote-text {
+            display: inline;
+            white-space: normal;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1em;
+            background-color: var(--primary-pink);
+            margin-left: 5px;
+            vertical-align: middle;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        #video-container {
+            width: 85%; max-width: 450px; opacity: 0; transform: translateY(50px);
+            transition: 1.5s all ease; border: 4px solid white; 
+            box-shadow: 0 0 50px rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+        video { width: 100%; display: block; }
+
+        .nav-controls {
+            display: flex; justify-content: space-between; width: 90%;
+            max-width: 600px; margin-top: 30px; opacity: 0; transition: 1s;
+        }
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.4);
+            color: white; padding: 12px 28px; border-radius: 40px;
+            cursor: pointer; font-family: 'Comfortaa'; transition: 0.3s; font-size: 1rem;
+        }
+        .nav-btn:hover { background: var(--primary-pink); border-color: var(--primary-pink); box-shadow: 0 0 20px var(--primary-pink); }
+
+        .photo-pop { position: absolute; width: 180px; height: 180px; object-fit: cover; border: 8px solid white; z-index: 10; animation: pFade 4s forwards; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        @keyframes pFade { 0% { opacity:0; transform: scale(0.5) rotate(-5deg); } 20% { opacity:1; } 100% { opacity:0; transform: scale(1.1) rotate(5deg); } }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop autoplay>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="transition-swipe"></div>
+    <div id="bg-canvas"></div>
+    <div id="stars-container"></div>
+    <div id="flowers-container"></div>
+
+    <div id="ui">
+        <h1 class="headline">C 8 марта<br>Любимая</h1>
+        <button class="heart-btn" onclick="startExperience()">❤️</button>
+    </div>
+
+    <div id="magic-layer">
+        <div id="quote-container">
+            <div id="quote-wrapper">
+                <span id="quote-text"></span><span id="cursor" class="cursor"></span>
+            </div>
+        </div>
+        <div id="video-container">
+            <video id="mainVideo" playsinline></video>
+        </div>
+        <div class="nav-controls" id="nav-ui">
+            <button class="nav-btn" id="btn-back" onclick="triggerSwipe(currentStep - 1)">← Назад</button>
+            <button class="nav-btn" id="btn-next" onclick="handleNextClick()">Дальше →</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = [
+            { text: "Жизнь будет не лёгкой, а, наоборот, очень трудной. Придётся бороться с этим каждый день, но я буду бороться, потому что ты мне нужна! Я хочу, чтобы ты была со мной. Каждый миг. Всегда!", video: "video1.mp4" },
+            { text: "Только мне одному, быть может, известно, что ты лучшая женщина на свете. Похоже, только я один понимаю, как замечательно всё, что ты делаешь. Как восхитительно ты всё воспринимаешь, как разговариваешь с людьми и как почти во всём проявляются твои лучшие качества: твои доброта и честность. И мне кажется, этого многие не замечают. И я очень рад и горжусь, что первым заметил это.", video: "video2.mp4" },
+            { text: "Влюбиться в тебя было проще всего на свете. Ничто для меня не имеет значения, только ты. Пока я дышу, постоянно думаю об этом. Я любил тебя в день нашей первой встречи, я люблю тебя сейчас и буду любить до конца своих дней", video: "video3.mp4" }
+        ];
+        
+        let currentStep = 0;
+        const photoFiles = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'];
+        const music = document.getElementById('bgMusic');
+
+        function startExperience() {
+            music.play();
+            triggerSwipe(0);
+        }
+
+        function fadeVolume(target, duration) {
+            const startVolume = music.volume;
+            const steps = 20;
+            const interval = duration / steps;
+            const stepValue = (target - startVolume) / steps;
+            let currentStepCount = 0;
+
+            const fader = setInterval(() => {
+                currentStepCount++;
+                music.volume = Math.max(0, Math.min(1, startVolume + (stepValue * currentStepCount)));
+                if (currentStepCount >= steps) clearInterval(fader);
+            }, interval);
+        }
+
+        function initDecor() {
+            const stars = document.getElementById('stars-container');
+            const flowers = document.getElementById('flowers-container');
+            for (let i = 0; i < 50; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.width = s.style.height = Math.random() * 3 + 'px';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.top = Math.random() * 100 + 'vh';
+                s.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                stars.appendChild(s);
+            }
+            setInterval(() => {
+                const f = document.createElement('div');
+                f.className = 'flower';
+                f.innerText = ['🌸', '🌹', '🌺', '🌷', '✨', '💖'][Math.floor(Math.random() * 6)];
+                f.style.left = Math.random() * 100 + 'vw';
+                f.style.top = '-50px';
+                f.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                f.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                flowers.appendChild(f);
+                setTimeout(() => f.remove(), 8000);
+            }, 400);
+        }
+
+        setInterval(() => {
+            if(document.getElementById('ui').style.display !== 'none') {
+                const img = document.createElement('img');
+                img.src = photoFiles[Math.floor(Math.random() * photoFiles.length)];
+                img.className = 'photo-pop';
+                img.style.left = Math.random() * 70 + 10 + '%';
+                img.style.top = Math.random() * 70 + 10 + '%';
+                document.body.appendChild(img);
+                setTimeout(() => img.remove(), 4000);
+            }
+        }, 2200);
+
+        function triggerSwipe(nextIndex) {
+            const swipe = document.getElementById('transition-swipe');
+            swipe.classList.remove('swipe-anim');
+            void swipe.offsetWidth;
+            swipe.classList.add('swipe-anim');
+
+            setTimeout(() => {
+                if (nextIndex < 0) {
+                    resetToMain();
+                } else if (nextIndex >= slides.length) {
+                    resetToMain();
+                } else {
+                    currentStep = nextIndex;
+                    showSlide(currentStep);
+                }
+            }, 600);
+        }
+
+        function handleNextClick() {
+            fadeVolume(1.0, 500);
+            if (currentStep === slides.length - 1) {
+                triggerSwipe(-1);
+            } else {
+                triggerSwipe(currentStep + 1);
+            }
+        }
+
+        let typingInterval; 
+        function typeEffect(element, cursor, text, speed, onComplete) {
+            element.innerHTML = "";
+            cursor.style.display = "inline-block";
+            let i = 0;
+            clearInterval(typingInterval);
+            typingInterval = setInterval(() => {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typingInterval);
+                    if (onComplete) onComplete();
+                }
+            }, speed);
+        }
+
+        function showSlide(index) {
+            document.getElementById('ui').style.display = 'none';
+            document.getElementById('bg-canvas').style.opacity = '0';
+            const magic = document.getElementById('magic-layer');
+            const qText = document.getElementById('quote-text');
+            const cursor = document.getElementById('cursor');
+            const vCont = document.getElementById('video-container');
+            const nav = document.getElementById('nav-ui');
+            const video = document.getElementById('mainVideo');
+            const btnNext = document.getElementById('btn-next');
+
+            magic.style.display = 'flex';
+            nav.style.opacity = '0';
+            vCont.style.opacity = '0';
+            vCont.style.transform = 'translateY(50px)';
+            video.pause();
+            
+            if (index === slides.length - 1) {
+                btnNext.innerText = "На главную 🏠";
+            } else {
+                btnNext.innerText = "Дальше →";
+            }
+            
+            typeEffect(qText, cursor, slides[index].text, 50, () => {
+                vCont.style.opacity = '1';
+                vCont.style.transform = 'translateY(0)';
+                video.src = slides[index].video;
+                
+                // Устанавливаем громкость видео: второе (индекс 1) громче, остальные стандартно
+                video.volume = (index === 1) ? 1.0 : 0.7;
+                
+                video.play();
+                // Музыка приглушается одинаково до 0.2 на всех видео
+                fadeVolume(0.2, 1000); 
+            });
+
+            video.onended = () => {
+                nav.style.opacity = '1';
+                fadeVolume(1.0, 1000);
+            };
+        }
+
+        function resetToMain() {
+            currentStep = 0;
+            fadeVolume(1.0, 500);
+            document.getElementById('magic-layer').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            document.getElementById('bg-canvas').style.opacity = '1';
+            document.getElementById('mainVideo').pause();
+        }
+
+        window.onload = initDecor;
+    </script>
+</body>
+</html>
